@@ -14,9 +14,7 @@ const chatModel = new ChatOpenAI({
 
 const app = new Hono();
 
-if (process.env.NODE_ENV === "development") {
-  app.use("/*", cors());
-}
+app.use("/*", cors());
 
 const schema = z.object({
   message: z.union([z.string(), z.string().array()]),
