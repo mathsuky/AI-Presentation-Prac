@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Mic, MicOff } from "lucide-react";
 import ImgUploader from "@/components/ImgUploader.tsx";
+import HomeScreen from "./components/HomeScreen";
 
 export default function TopScreen() {
   const [isRecording, setIsRecording] = useState(false);
@@ -16,6 +17,8 @@ export default function TopScreen() {
     null
   );
   const [chunks, setChunks] = useState<Blob[]>([]);
+  const [images, setImages] = useState<string[]>([]);
+  const [isUploaded, setIsUploaded] = useState(false);
 
   type Temp = {
     mediaRecorder: MediaRecorder;
@@ -99,11 +102,9 @@ export default function TopScreen() {
     }
   };
 
-  // 子コンポーネントの画像処理周り
-  const [images, setImages] = useState<string[]>([]);
-
   const handleImagesUpload = (uploadedImages: string[]) => {
     setImages(uploadedImages);
+    setIsUploaded(true);
   };
 
   return (
@@ -117,7 +118,11 @@ export default function TopScreen() {
             あなたのプレゼンをAIがサポートします
           </CardDescription>
         </CardHeader>
-        <ImgUploader onImagesUpload={handleImagesUpload} />
+        {isUploaded ? (
+          <HomeScreen images={images} /> // imagesをプロップスとして渡す
+        ) : (
+          <ImgUploader onImagesUpload={handleImagesUpload} />
+        )}
         <CardContent>
           <p className="mb-4 text-sm text-gray-600">
             1. 「開始」ボタンを押して、プレゼンを始めてください。 2.
