@@ -9,7 +9,7 @@ import OpenAI from "openai";
 require("dotenv").config();
 
 const chatModel = new ChatOpenAI({
-  model: "gpt-4o",
+  model: "gpt-4o-2024-08-06",
 });
 
 const app = new Hono();
@@ -35,7 +35,7 @@ type MessageType =
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-})
+});
 
 app.post("/audio-to-text", async (c) => {
   const { audio } = await c.req.parseBody();
@@ -50,6 +50,18 @@ app.post("/audio-to-text", async (c) => {
     model: "whisper-1",
   });
   return c.json({ text: transcription.text });
+});
+
+const orderText = `あなたはプレゼンテーションの授業の先生です。生徒のプレゼンテーションの音声の文字起こしが文字列として、スライドが画像の列として順番に渡されるので、生徒に適切なフィードバックを与えてください。日本語で答えてください。以下の3つの事柄についてフィードバックしてください。
+contradiction: 文字起こしとスライドとの間に食い違いがある場合、その食い違いを列挙してください。無い場合は空の配列を返してください。
+potential questions: 生徒のプレゼンテーションに対して、想定される質問を2つ以上列挙してください。
+improvement: 生徒のスライドや、発表の仕方に対して、改善点を2つ以上列挙してください。
+`;
+
+const feedbackSchema = z.object({
+  contradiction: z.string().array(),
+  potential_questions: z.string().array(),
+  improvement: z.string().array(),
 });
 
 app.post(
@@ -67,14 +79,17 @@ app.post(
         content.push({ type: "image_url", image_url: { url: image } });
       }
     }
-    const aiMessageChunk = await chatModel.invoke([
-      {
-        role: "user",
-        content,
-      },
-    ]);
-    return c.json({ content: aiMessageChunk });
-  }
+    const aiMessageChunk = await chatModel
+      .withStructuredOutput(feedbackSchema)
+      .invoke([
+        { role: "system", content: [{ type: "text", text: orderText }] },
+        {
+          role: "user",
+          content,
+        },
+      ]);
+    return c.json(aiMessageChunk);
+  },
 );
 
 const port = Number(process.env.PORT) || 3000;
