@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Mic, MicOff } from "lucide-react";
+import ImgUploader from "@/components/ImgUploader.tsx";
 
 export default function TopScreen() {
   const [isRecording, setIsRecording] = useState(false);
@@ -97,9 +98,17 @@ export default function TopScreen() {
       }
     }
   };
+
+  // 子コンポーネントの画像処理周り
+  const [images, setImages] = useState<string[]>([]);
+
+  const handleImagesUpload = (uploadedImages: string[]) => {
+    setImages(uploadedImages);
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-indigo-100">
-      <Card className="w-[350px]">
+    <div className="flex items-center justify-center min-h-screen bg-[#E5F1F8] p-4">
+      <Card className="w-full max-w-4xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
             AI プレゼン練習
@@ -108,6 +117,7 @@ export default function TopScreen() {
             あなたのプレゼンをAIがサポートします
           </CardDescription>
         </CardHeader>
+        <ImgUploader onImagesUpload={handleImagesUpload} />
         <CardContent>
           <p className="mb-4 text-sm text-gray-600">
             1. 「開始」ボタンを押して、プレゼンを始めてください。 2.
