@@ -4,7 +4,9 @@ import { ChatOpenAI } from "@langchain/openai";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 
-require("dotenv").config();
+require("dotenv").config({
+  chatModel: "gpt-4o"
+});
 
 const chatModel = new ChatOpenAI();
 
