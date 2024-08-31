@@ -45,6 +45,8 @@ const ResultView = () => {
         "ランダムなひらがな３文字を返してください。それ以外はレスポンスに含めないでください。"
       );
       setApiResponseText(response.content.kwargs.content);
+      // 一次処置(使ってないと怒られるので)
+      console.log(apiResponseText);
       setLoadingState("loaded");
     } catch (error) {
       console.error("Error fetching API response:", error);
