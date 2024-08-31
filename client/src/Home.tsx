@@ -119,15 +119,17 @@ export default function TopScreen() {
           </CardDescription>
         </CardHeader>
         {isUploaded ? (
-          <HomeScreen images={images} /> // imagesをプロップスとして渡す
+          <HomeScreen images={images} />
         ) : (
           <ImgUploader onImagesUpload={handleImagesUpload} />
         )}
         <CardContent>
-          <p className="mb-4 text-sm text-gray-600">
-            1. 「開始」ボタンを押して、プレゼンを始めてください。 2.
-            終了したら「停止」ボタンを押してください。 3.
-            AIがフィードバックを提供します。
+          <p className="mb-4 w-2/3 mx-auto text-sm text-gray-600">
+            1.「開始」ボタンを押して、プレゼンを始めてください。
+            <br />
+            2. 終了したら「停止」ボタンを押してください。
+            <br />
+            3. AIがフィードバックを提供します。
           </p>
           <div className="flex justify-center">
             <Button
