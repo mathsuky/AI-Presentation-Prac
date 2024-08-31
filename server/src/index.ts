@@ -37,6 +37,7 @@ const openai = new OpenAI({
 
 app.post("/audio-to-text", async (c) => {
   const { audio } = await c.req.parseBody();
+  // console.log(audio);
   if (!audio) {
     return c.json({ error: "audio is required" }, 400);
   }
@@ -47,7 +48,7 @@ app.post("/audio-to-text", async (c) => {
     file: audio,
     model: "whisper-1",
   });
-  return c.json({ text: transcription.text });
+  return c.json({ text: transcription });
 });
 
 const orderText = (is_single_text: boolean) => {
@@ -94,7 +95,7 @@ app.post(
       if (message.length !== images.length) {
         return c.json(
           { error: "message and images must have the same length" },
-          400,
+          400
         );
       }
       for (let i = 0; i < message.length; i++) {
@@ -118,7 +119,7 @@ app.post(
         },
       ]);
     return c.json(aiMessageChunk);
-  },
+  }
 );
 
 const port = Number(process.env.PORT) || 3000;
