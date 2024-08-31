@@ -74,7 +74,7 @@ app.post(
       },
     ]);
     return c.json({ content: aiMessageChunk });
-  },
+  }
 );
 
 const port = Number(process.env.PORT) || 3000;
