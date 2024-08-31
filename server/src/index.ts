@@ -4,17 +4,28 @@ import { ChatOpenAI } from "@langchain/openai";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 
-require("dotenv").config({
-  chatModel: "gpt-4o"
-});
+require("dotenv").config();
 
-const chatModel = new ChatOpenAI();
+const chatModel = new ChatOpenAI({
+  model: "gpt-4o",
+});
 
 const app = new Hono();
 
 const schema = z.object({
   message: z.string(),
+  image: z.string().optional(),
 });
+
+type MessageType =
+  | {
+      type: "text";
+      text: string;
+    }
+  | {
+      type: "image_url";
+      image_url: { url: string };
+    };
 
 app.post(
   "/chat",
@@ -24,8 +35,17 @@ app.post(
     }
   }),
   async (c) => {
-    const { message } = c.req.valid("json");
-    const aiMessageChunk = await chatModel.invoke(message);
+    const { message, image } = c.req.valid("json");
+    let content: MessageType[] = [{ type: "text", text: message }];
+    if (image) {
+      content.push({ type: "image_url", image_url: { url: image } });
+    }
+    const aiMessageChunk = await chatModel.invoke([
+      {
+        role: "user",
+        content,
+      },
+    ]);
     return c.json({ content: aiMessageChunk });
   },
 );
