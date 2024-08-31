@@ -1,6 +1,6 @@
 import "./App.css";
 import Home from "./Home.tsx";
-import ResultView from "./About.tsx";
+import ResultView from "./Result.tsx";
 import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 
 function App() {
