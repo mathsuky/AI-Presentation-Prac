@@ -8,16 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Mic, MicOff } from "lucide-react";
-import { createContext } from 'react'
-import {Vertual} from './Result.tsx'
-const SampleContext = createContext<Blob|null>(null)
 
 export default function TopScreen() {
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
-  const [recordedBlob,setBlob]=useState<Blob|null>(null);
   const [chunks, setChunks] = useState<Blob[]>([]);
 
   type Temp = {
@@ -55,7 +51,21 @@ export default function TopScreen() {
         mediaRecorder.onstop = () => {
           const recordedBlob = new Blob(chunks, { type: "audio/webm" });
           console.log("録音データのBlob:", recordedBlob);
-          setBlob(recordedBlob)
+        const fd = new FormData();
+        if (recordedBlob!=null){
+        fd.append('audio', recordedBlob);
+        fetch( '/audio-to-text', {
+          method: 'POST',
+          body: fd
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      }else{console.error("Error: recordedBlob is null");}
         };
       } else {
         console.error("Error: mediaRecorder is null");
@@ -84,14 +94,7 @@ export default function TopScreen() {
       }
     }
   };
-  const [data] = useState(recordedBlob)
-  return (
-    <div>
-      <div>
-        <SampleContext.Provider value={data}>
-          <Vertual />
-        </SampleContext.Provider>
-      </div>
+  return (    
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-indigo-100">
         <Card className="w-[350px]">
           <CardHeader>
@@ -133,7 +136,6 @@ export default function TopScreen() {
           </CardContent>
         </Card>
       </div>
-    </div>
   );
 }
 
