@@ -28,7 +28,7 @@ type MessageType =
     }
   | {
       type: "image_url";
-      image_url: { url: string };
+      image_url: { url: string, detail?: "low" | "high" };
     };
 
 const openai = new OpenAI({
@@ -55,10 +55,10 @@ const orderText = (is_single_text: boolean) => {
     "生徒のプレゼンテーションの音声の文字起こしが文字列として、スライドが画像の列として順番に渡されるので";
   const multi_text_structure =
     "生徒のプレゼンテーションのスライドの画像と、そのスライドに対応する発表の音声の文字起こしが交互に渡されるので";
-  const text = `あなたはプレゼンテーションの授業の先生です。${is_single_text ? single_text_structure : multi_text_structure}、生徒に適切なフィードバックを与えてください。日本語で答えてください。文字起こしとスライドから得られる情報のみから答えてください。以下の3つの事柄についてフィードバックしてください。
+  const text = `あなたはプレゼンテーションの授業の先生です。${is_single_text ? single_text_structure : multi_text_structure}、生徒に適切なフィードバックを与えてください。文字起こしとスライドから得られる情報のみから答えてください。以下の3つの事柄についてフィードバックしてください。日本語で答えてください。スライドの時系列を考慮してフィードバックしてください。
 contradiction: 文字起こしとスライドとの間に食い違いがある場合、その食い違いを列挙してください。無い場合は空の配列を返してください。
-potential questions: 生徒のプレゼンテーションに対して、想定される質問を沢山挙げてください。
-improvement: 生徒のスライドや、発表の仕方に対して、改善点を沢山挙げてください。
+potential questions: 生徒のプレゼンテーションに対して、想定される質問を挙げてください。特に良い質問がなければ、空の配列を返してください。
+improvement: 生徒のスライドや、発表の仕方に対して、良い点にも触れつつ、改善点を挙げてください。スライドについて言及する時は、何枚目のスライドの話なのかを文章に含めてください。特に改善点がなければ、空の配列を返してください。
 `;
   return text;
 };
@@ -98,7 +98,7 @@ app.post(
         );
       }
       for (let i = 0; i < message.length; i++) {
-        content.push({ type: "image_url", image_url: { url: images[i] } });
+        content.push({ type: "image_url", image_url: { url: images[i], detail: "low" } });
         content.push({ type: "text", text: message[i] });
       }
     }
