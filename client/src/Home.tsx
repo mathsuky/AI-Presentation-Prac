@@ -51,6 +51,21 @@ export default function TopScreen() {
         mediaRecorder.onstop = () => {
           const recordedBlob = new Blob(chunks, { type: "audio/webm" });
           console.log("録音データのBlob:", recordedBlob);
+        const fd = new FormData();
+        if (recordedBlob!=null){
+        fd.append('audio', recordedBlob);
+        fetch( '/audio-to-text', {
+          method: 'POST',
+          body: fd
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      }else{console.error("Error: recordedBlob is null");}
         };
       } else {
         console.error("Error: mediaRecorder is null");
@@ -79,49 +94,48 @@ export default function TopScreen() {
       }
     }
   };
-
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-indigo-100">
-      <Card className="w-[350px]">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">
-            AI プレゼン練習
-          </CardTitle>
-          <CardDescription className="text-center">
-            あなたのプレゼンをAIがサポートします
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-4 text-sm text-gray-600">
-            1. 「開始」ボタンを押して、プレゼンを始めてください。 2.
-            終了したら「停止」ボタンを押してください。 3.
-            AIがフィードバックを提供します。
-          </p>
-          <div className="flex justify-center">
-            <Button
-              onClick={toggleRecording}
-              className={`w-32 ${
-                isRecording
-                  ? "bg-red-500 hover:bg-red-600"
-                  : "bg-green-500 hover:bg-green-600"
-              }`}
-            >
-              {isRecording ? (
-                <>
-                  <MicOff className="w-4 h-4 mr-2" />
-                  停止
-                </>
-              ) : (
-                <>
-                  <Mic className="w-4 h-4 mr-2" />
-                  開始
-                </>
-              )}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+  return (    
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-indigo-100">
+        <Card className="w-[350px]">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center">
+              AI プレゼン練習
+            </CardTitle>
+            <CardDescription className="text-center">
+              あなたのプレゼンをAIがサポートします
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4 text-sm text-gray-600">
+              1. 「開始」ボタンを押して、プレゼンを始めてください。 2.
+              終了したら「停止」ボタンを押してください。 3.
+              AIがフィードバックを提供します。
+            </p>
+            <div className="flex justify-center">
+              <Button
+                onClick={toggleRecording}
+                className={`w-32 ${
+                  isRecording
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-green-500 hover:bg-green-600"
+                }`}
+              >
+                {isRecording ? (
+                  <>
+                    <MicOff className="w-4 h-4 mr-2" />
+                    停止
+                  </>
+                ) : (
+                  <>
+                    <Mic className="w-4 h-4 mr-2" />
+                    開始
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
   );
 }
 
