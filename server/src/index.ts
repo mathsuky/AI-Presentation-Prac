@@ -3,6 +3,8 @@ import { Hono } from "hono";
 import { ChatOpenAI } from "@langchain/openai";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import { cors } from "hono/cors";
+import OpenAI from "openai";
 
 require("dotenv").config();
 
@@ -11,6 +13,10 @@ const chatModel = new ChatOpenAI({
 });
 
 const app = new Hono();
+
+if (process.env.NODE_ENV === "development") {
+  app.use("/*", cors());
+}
 
 const schema = z.object({
   message: z.string(),
@@ -26,6 +32,25 @@ type MessageType =
       type: "image_url";
       image_url: { url: string };
     };
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+app.post("/audio-to-text", async (c) => {
+  const { audio } = await c.req.parseBody();
+  if (!audio) {
+    return c.json({ error: "audio is required" }, 400);
+  }
+  if (typeof audio === "string") {
+    return c.json({ error: "audio must be a audio file" }, 400);
+  }
+  const transcription = await openai.audio.transcriptions.create({
+    file: audio,
+    model: "whisper-1",
+  });
+  return c.json({ text: transcription.text });
+});
 
 app.post(
   "/chat",
