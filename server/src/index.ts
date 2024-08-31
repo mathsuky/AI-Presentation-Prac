@@ -28,7 +28,7 @@ type MessageType =
     }
   | {
       type: "image_url";
-      image_url: { url: string, detail?: "low" | "high" };
+      image_url: { url: string; detail?: "low" | "high" };
     };
 
 const openai = new OpenAI({
@@ -98,7 +98,10 @@ app.post(
         );
       }
       for (let i = 0; i < message.length; i++) {
-        content.push({ type: "image_url", image_url: { url: images[i], detail: "low" } });
+        content.push({
+          type: "image_url",
+          image_url: { url: images[i], detail: "low" },
+        });
         content.push({ type: "text", text: message[i] });
       }
     }
@@ -107,9 +110,7 @@ app.post(
       .invoke([
         {
           role: "system",
-          content: [
-            { type: "text", text: orderText(is_single_text) },
-          ],
+          content: [{ type: "text", text: orderText(is_single_text) }],
         },
         {
           role: "user",
