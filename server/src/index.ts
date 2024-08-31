@@ -14,7 +14,7 @@ const app = new Hono();
 
 const schema = z.object({
   message: z.string(),
-  image: z.string().optional(),
+  images: z.string().array().optional(),
 });
 
 type MessageType =
@@ -35,10 +35,12 @@ app.post(
     }
   }),
   async (c) => {
-    const { message, image } = c.req.valid("json");
+    const { message, images } = c.req.valid("json");
     let content: MessageType[] = [{ type: "text", text: message }];
-    if (image) {
-      content.push({ type: "image_url", image_url: { url: image } });
+    if (images) {
+      for (const image of images) {
+        content.push({ type: "image_url", image_url: { url: image } });
+      }
     }
     const aiMessageChunk = await chatModel.invoke([
       {
