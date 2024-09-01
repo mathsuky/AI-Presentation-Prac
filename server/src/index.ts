@@ -48,7 +48,7 @@ app.post("/audio-to-text", async (c) => {
     model: "whisper-1",
   });
   if (typeof image === "string") {
-    const systemMessage = "生徒のプレゼンテーションの音声の文字起こしが文字列として、スライドが画像として与えられます。あなたのタスクは、スライドから得られる情報を使って、文字起こしに含まれるタイプミスを修正してください。与えられたコンテキストのみを使ってください。"
+    const systemMessage = "生徒のプレゼンテーションの音声の文字起こしが文字列として、スライドが画像として与えられます。あなたのタスクは、スライドから得られる情報を使って、文字起こしに含まれるタイプミスを修正することです。与えられたコンテキストのみを使ってください。"
     const aiMessageChunk = await chatModel
       .withStructuredOutput(z.object({ text: z.string() }))
       .invoke([
