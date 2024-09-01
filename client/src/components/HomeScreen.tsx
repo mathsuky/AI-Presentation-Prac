@@ -185,11 +185,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="carousel-prev absolute left-4 top-1/2 -translate-y-1/2" />
+        {/* <CarouselPrevious className="carousel-prev absolute left-4 top-1/2 -translate-y-1/2" />
         <button
           className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-transparent"
           onClick={handleOverlayPrevClick}
-        />
+        /> */}
         <CarouselNext className="carousel-next absolute right-4 top-1/2 -translate-y-1/2" />
         <button
           className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-transparent"
