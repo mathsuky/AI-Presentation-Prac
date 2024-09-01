@@ -8,7 +8,6 @@ interface ImgUploaderProps {
 
 const ImgUploader: React.FC<ImgUploaderProps> = ({ onImagesUpload }) => {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [isUploading, setIsUploading] = useState(true);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -22,7 +21,6 @@ const ImgUploader: React.FC<ImgUploaderProps> = ({ onImagesUpload }) => {
 
   const handleFinishUpload = () => {
     if (uploadedImages.length > 0) {
-      setIsUploading(false);
       onImagesUpload(uploadedImages);
     } else {
       alert("画像をアップロードしてください。");

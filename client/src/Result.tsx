@@ -30,6 +30,10 @@ const blobUrlToBase64 = async (blobUrl: string): Promise<string> => {
 
 const ResultView = () => {
   const { globalImages, globalTranscribedTexts } = useContext(AppContext);
+  const [contradictions, setContradictions] = useState<string[]>([]);
+  const [improvements, setImprovements] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<string[]>([]);
+  const [presentationText, setPresentationText] = useState<string | null>(null);
   const getAPIResponse = async (
     message: string | string[],
     images?: string[]
@@ -50,28 +54,23 @@ const ResultView = () => {
     return data;
   };
 
-  const [apiResponseText, setApiResponseText] = useState<string | null>(null);
   const [loadingState, setLoadingState] = useState<
     "loading" | "loaded" | "error"
   >("loading");
   const navigate = useNavigate();
 
   const handleButtonClick = async () => {
-    console.log(globalImages, globalTranscribedTexts);
     const base64Images = await Promise.all(globalImages.map(blobUrlToBase64));
-    console.log("Base64 images:", base64Images);
-    const tmp = [
-      "https://rs.sakura.ad.jp/column/wp-content/uploads/2021/05/0514_img01.png",
-      "https://rs.sakura.ad.jp/column/wp-content/uploads/2021/05/0514_img01.png",
-    ];
     setLoadingState("loading");
     try {
       const response = await getAPIResponse(
         globalTranscribedTexts,
         base64Images
       );
-      // setApiResponseText(response.content.kwargs.content);
-      console.log("API response:", response);
+      setContradictions(response.contradiction);
+      setImprovements(response.improvement);
+      setQuestions(response.potential_questions);
+      setPresentationText(globalTranscribedTexts.join("\n"));
       setLoadingState("loaded");
     } catch (error) {
       console.error("Error fetching API response:", error);
@@ -79,11 +78,10 @@ const ResultView = () => {
     }
   };
 
-  const transcription = "これはサンプルのプレゼンテーション内容です...";
   const feedback = {
-    errors: ["内容に矛盾があります: ..."],
-    questions: ["想定される質問: ...?"],
-    improvements: ["改善点: ..."],
+    errors: contradictions,
+    questions: questions,
+    improvements: improvements,
   };
 
   return (
@@ -120,7 +118,7 @@ const ResultView = () => {
               </TabsList>
               <TabsContent value="transcription">
                 <ScrollArea className="h-[400px] w-full rounded-md border border-[#0070B9] p-4">
-                  <p>{transcription}</p>
+                  <p>{presentationText}</p>
                 </ScrollArea>
               </TabsContent>
               <TabsContent value="feedback">
