@@ -233,7 +233,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
           onClick={handleToResult}
           className="w-32 bg-blue-500 hover:bg-blue-600 ml-2"
         >
-          終了
+          リザルト
         </Button>
       </div>
     </div>
