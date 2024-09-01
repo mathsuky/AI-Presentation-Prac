@@ -122,9 +122,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
   };
 
   const navigate = useNavigate();
-  // type TranscribedText = {
-  //   text: string;
-  // };
   const handleToResult = () => {
     if (isTranscribing) {
       alert("音声の文字起こし中です。しばらくお待ちください。");
@@ -178,7 +175,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
 
   return (
     <div>
-      <button onClick={handleToResult}>to result</button>
       <Carousel className="w-full max-w-xl mx-auto">
         <CarouselContent>
           {images.map((src, index) => (
