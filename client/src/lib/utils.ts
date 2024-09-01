@@ -5,6 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const BASE = import.meta.env.DEV
-  ? "http://localhost:3000"
-  : "https://team-c-qhxn.onrender.com";
+// export const BASE = import.meta.env.DEV
+//   ? "http://localhost:3000"
+//   : "https://team-c-qhxn.onrender.com";

@@ -1,6 +1,5 @@
 import { useState, useContext } from "react";
 import React from "react";
-import { BASE } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -24,9 +23,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
   );
   const [chunks, setChunks] = useState<Blob[]>([]);
   const [imgPosition, setImgPosition] = useState(0);
-  const [transcribedTexts, setTranscribedTexts] = useState<string[]>(
-    []
-  );
+  const [transcribedTexts, setTranscribedTexts] = useState<string[]>([]);
   const [isTranscribing, setIsTranscribing] = useState(false);
 
   const { setGlobalImages, setGlobalTranscribedTexts } = useContext(AppContext);
@@ -60,7 +57,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
           if (recordedBlob != null) {
             fd.append("audio", recordedBlob, "recordData.webm");
             setIsTranscribing(true);
-            fetch(`${BASE}/audio-to-text`, {
+            fetch(`${process.env.REACT_APP_BASE_URL}/audio-to-text`, {
               method: "POST",
               body: fd,
             })

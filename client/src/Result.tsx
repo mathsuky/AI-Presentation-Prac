@@ -1,5 +1,4 @@
 import { useState, useContext, useEffect } from "react";
-import { BASE } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,7 +38,7 @@ const ResultView = () => {
     message: string | string[],
     images?: string[]
   ) => {
-    const response = await fetch(`${BASE}/chat`, {
+    const response = await fetch(`${process.env.REACT_APP_BASE_URL}/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
