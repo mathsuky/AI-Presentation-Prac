@@ -36,8 +36,7 @@ const openai = new OpenAI({
 });
 
 app.post("/audio-to-text", async (c) => {
-  const { audio } = await c.req.parseBody();
-  // console.log(audio);
+  const { audio, image } = await c.req.parseBody();
   if (!audio) {
     return c.json({ error: "audio is required" }, 400);
   }
@@ -48,7 +47,26 @@ app.post("/audio-to-text", async (c) => {
     file: audio,
     model: "whisper-1",
   });
-  return c.json({ text: transcription });
+  if (typeof image === "string") {
+    const systemMessage = "生徒のプレゼンテーションの音声の文字起こしが文字列として、スライドが画像として与えられます。あなたのタスクは、スライドから得られる情報を使って、文字起こしに含まれるタイプミスを修正することです。与えられたコンテキストのみを使ってください。"
+    const aiMessageChunk = await chatModel
+      .withStructuredOutput(z.object({ text: z.string() }))
+      .invoke([
+        {
+          role: "system",
+          content: [{ type: "text", text: systemMessage }],
+        },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: transcription.text },
+            { type: "image_url", image_url: { url: image } },
+          ],
+        },
+      ]);
+    return c.json(aiMessageChunk);
+  }
+  return c.json({ text: transcription.text });
 });
 
 const orderText = (is_single_text: boolean) => {
