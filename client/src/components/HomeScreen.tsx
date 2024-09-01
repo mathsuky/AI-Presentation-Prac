@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 import React from "react";
+import { BASE } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -59,7 +60,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
           if (recordedBlob != null) {
             fd.append("audio", recordedBlob, "recordData.webm");
             setIsTranscribing(true);
-            fetch("http://localhost:3000/audio-to-text", {
+            fetch(`${BASE}/audio-to-text`, {
               method: "POST",
               body: fd,
             })
