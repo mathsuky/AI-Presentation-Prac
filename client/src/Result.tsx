@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -59,7 +59,7 @@ const ResultView = () => {
   >("loading");
   const navigate = useNavigate();
 
-  const handleButtonClick = async () => {
+  const handleGetFeedback = async () => {
     const base64Images = await Promise.all(globalImages.map(blobUrlToBase64));
     setLoadingState("loading");
     try {
@@ -78,6 +78,10 @@ const ResultView = () => {
     }
   };
 
+  useEffect(() => {
+    handleGetFeedback();
+  }, []);
+
   const feedback = {
     errors: contradictions,
     questions: questions,
@@ -87,7 +91,6 @@ const ResultView = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#E5F1F8] p-4">
       <div></div>
-      <button onClick={handleButtonClick}>APIを呼び出す</button>
       <Card className="w-full max-w-4xl border-[#0070B9] border-t-4">
         <CardHeader className="bg-[#0070B9] text-white">
           <CardTitle className="text-2xl font-bold text-center">
@@ -123,16 +126,16 @@ const ResultView = () => {
               </TabsContent>
               <TabsContent value="feedback">
                 <ScrollArea className="h-[400px] w-full rounded-md p-4">
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-4">
                     <Card className="border-t-4 border-t-[#E83929]">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
+                        <CardTitle className="text-xl font-bold">
                           内容の誤り指摘
                         </CardTitle>
                         <AlertTriangle className="h-4 w-4 text-[#E83929]" />
                       </CardHeader>
                       <CardContent>
-                        <ul className="list-disc pl-5 text-sm">
+                        <ul className="list-disc pl-5 text-sm text-left">
                           {feedback.errors.map((error, index) => (
                             <li key={index}>{error}</li>
                           ))}
@@ -141,13 +144,13 @@ const ResultView = () => {
                     </Card>
                     <Card className="border-t-4 border-t-[#0070B9]">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
+                        <CardTitle className="text-xl font-bold">
                           想定質問
                         </CardTitle>
                         <HelpCircle className="h-4 w-4 text-[#0070B9]" />
                       </CardHeader>
                       <CardContent>
-                        <ul className="list-disc pl-5 text-sm">
+                        <ul className="list-disc pl-5 text-sm text-left">
                           {feedback.questions.map((question, index) => (
                             <li key={index}>{question}</li>
                           ))}
@@ -156,13 +159,13 @@ const ResultView = () => {
                     </Card>
                     <Card className="border-t-4 border-t-[#F5A623]">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
+                        <CardTitle className="text-xl font-bold">
                           改善点
                         </CardTitle>
                         <Lightbulb className="h-4 w-4 text-[#F5A623]" />
                       </CardHeader>
                       <CardContent>
-                        <ul className="list-disc pl-5 text-sm">
+                        <ul className="list-disc pl-5 text-sm text-left">
                           {feedback.improvements.map((improvement, index) => (
                             <li key={index}>{improvement}</li>
                           ))}
