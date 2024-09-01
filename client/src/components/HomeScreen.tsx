@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +9,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Mic, MicOff } from "lucide-react";
+import { AppContext } from "@/contexts/AppContext";
+import { useNavigate } from "react-router-dom";
 
 interface HomeScreenProps {
   images: string[];
@@ -22,6 +24,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
   const [chunks, setChunks] = useState<Blob[]>([]);
   const [imgPosition, setImgPosition] = useState(0);
   const [transcribedTexts, setTranscribedTexts] = useState<string[]>([]);
+
+  const { globalImages, setGlobalImages, setGlobalTranscribedTexts } =
+    useContext(AppContext);
 
   async function startRecording() {
     try {
@@ -58,7 +63,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
             })
               .then((response) => response.json())
               .then((data) => {
-                setTranscribedTexts((prevTexts) => [...prevTexts, data.text]);
+                setTranscribedTexts((prevTexts) => {
+                  const newTexts = [...prevTexts, data.text];
+                  setGlobalTranscribedTexts(newTexts);
+                  return newTexts;
+                });
                 console.log(data);
               })
               .catch((error) => {
@@ -109,6 +118,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
     }
   };
 
+  const navigate = useNavigate();
+  const handleToResult = () => {
+    setGlobalImages(images);
+    setGlobalTranscribedTexts(transcribedTexts);
+    navigate("/result");
+  };
+
   const handleOverlayNextClick = async () => {
     try {
       if (!isRecording) {
@@ -154,6 +170,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
 
   return (
     <div>
+      <button onClick={handleToResult}>to result</button>
       <button onClick={showConsole}>show</button>
       <Carousel className="w-full max-w-xl mx-auto">
         <CarouselContent>
@@ -200,6 +217,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
             )}
           </Button>
         )}
+        <Button
+          onClick={handleToResult}
+          className="w-32 bg-blue-500 hover:bg-blue-600 ml-2"
+        >
+          終了
+        </Button>
       </div>
     </div>
   );
