@@ -55,7 +55,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
         mediaRecorder.stop();
         mediaRecorder.onstop = () => {
           const recordedBlob = new Blob(chunks, { type: "audio/webm" });
-          console.log("録音データのBlob:", recordedBlob);
           const fd = new FormData();
           if (recordedBlob != null) {
             fd.append("audio", recordedBlob, "recordData.webm");
@@ -130,11 +129,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
   };
   const handleToResult = () => {
     setGlobalImages(images);
-
+    if (isTranscribing) {
+      alert("音声の文字起こし中です。しばらくお待ちください。");
+      return;
+    }
     const stringTranscribedTexts = transcribedTexts.map(
       (item: TranscribedText) => item.text
     );
-    console.log("Transcribed texts:", stringTranscribedTexts);
     setGlobalTranscribedTexts(stringTranscribedTexts);
     navigate("/result");
   };
@@ -179,16 +180,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
     }
   };
 
-  const showConsole = () => {
-    console.log(imgPosition);
-    console.log(images.length);
-    console.log(transcribedTexts);
-  };
-
   return (
     <div>
       <button onClick={handleToResult}>to result</button>
-      <button onClick={showConsole}>show</button>
       <Carousel className="w-full max-w-xl mx-auto">
         <CarouselContent>
           {images.map((src, index) => (
