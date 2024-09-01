@@ -21,6 +21,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
   );
   const [chunks, setChunks] = useState<Blob[]>([]);
   const [imgPosition, setImgPosition] = useState(0);
+  const [transcribedTexts, setTranscribedTexts] = useState<string[]>([]);
 
   async function startRecording() {
     try {
@@ -57,6 +58,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
             })
               .then((response) => response.json())
               .then((data) => {
+                setTranscribedTexts((prevTexts) => [...prevTexts, data.text]);
                 console.log(data);
               })
               .catch((error) => {
@@ -108,37 +110,42 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
   };
 
   const handleOverlayNextClick = async () => {
-    if (!isRecording) {
-      alert("録音中のみ次の画像に進めます");
-      return;
-    }
-    if (imgPosition === images.length - 1) {
-      alert("これ以上進めません");
-      return;
-    }
-    setImgPosition((prevPosition) => prevPosition + 1);
-    await startAndStop();
-    const nextButton = document.querySelector(".carousel-next");
-    if (nextButton) {
-      (nextButton as HTMLElement).click();
+    try {
+      if (imgPosition === images.length - 1) {
+        alert("これ以上進めません");
+        return;
+      }
+      setImgPosition((prevPosition) => prevPosition + 1);
+      await startAndStop();
+      const nextButton = document.querySelector(".carousel-next");
+      if (nextButton) {
+        (nextButton as HTMLElement).click();
+      }
+    } catch (error) {
+      console.error("正しく画像を進められませんでした。:", error);
     }
   };
 
   const handleOverlayPrevClick = async () => {
-    if (imgPosition === 0) {
-      alert("これ以上戻れません");
-      return;
-    }
-    setImgPosition((prevPosition) => prevPosition - 1);
-    const prevButton = document.querySelector(".carousel-prev");
-    if (prevButton) {
-      (prevButton as HTMLElement).click();
+    try {
+      if (imgPosition === 0) {
+        alert("これ以上戻れません");
+        return;
+      }
+      setImgPosition((prevPosition) => prevPosition - 1);
+      const prevButton = document.querySelector(".carousel-prev");
+      if (prevButton) {
+        (prevButton as HTMLElement).click();
+      }
+    } catch (error) {
+      console.error("正しく画像を戻せませんでした。", error);
     }
   };
 
   const showConsole = () => {
     console.log(imgPosition);
     console.log(images.length);
+    console.log(transcribedTexts);
   };
 
   return (
