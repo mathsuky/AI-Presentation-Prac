@@ -20,18 +20,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
     null
   );
   const [chunks, setChunks] = useState<Blob[]>([]);
-
+  const [imgPosition, setImgPosition] = useState(0);
 
   async function startRecording() {
     try {
-      // 音声ストリームの取得
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const chunks: Blob[] = [];
-      // MediaRecorderの作成
       const mediaRecorder = new MediaRecorder(stream);
-      // 録音開始
       mediaRecorder.start();
-      // 録音データが利用可能になったときの処理
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           chunks.push(event.data);
@@ -48,13 +44,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
   function finishRecording(mediaRecorder: MediaRecorder, chunks: Blob[]) {
     try {
       if (mediaRecorder !== null) {
-        // 録音停止
         mediaRecorder.stop();
         mediaRecorder.onstop = () => {
           const recordedBlob = new Blob(chunks, { type: "audio/webm" });
           console.log("録音データのBlob:", recordedBlob);
           const fd = new FormData();
-          console.log("fd:", fd);
           if (recordedBlob != null) {
             fd.append("audio", recordedBlob, "recordData.webm");
             fetch("http://localhost:3000/audio-to-text", {
@@ -97,8 +91,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
       }
     }
   };
+
   const startAndStop = async () => {
-    try{
+    try {
       if (mediaRecorder) {
         finishRecording(mediaRecorder, chunks);
         setIsRecording(false);
@@ -107,47 +102,95 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
       } else {
         console.error("録音の停止に失敗しました: mediaRecorderがnullです");
       }
-    }catch (error) {
+    } catch (error) {
       console.error("録音の開始に失敗しました:", error);
     }
-  }
-  return (<div>
-    <Carousel className="w-full max-w-xl mx-auto">
-      <CarouselContent>
-        {images.map((src, index) => (
-          <CarouselItem key={index}>
-            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg">
-              <img src={src} alt={`Slide ${index + 1}`} />
-            </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2" />
-      <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2" onClick={startAndStop}/>
-    </Carousel>
-              <div className="flex justify-center">
-              <Button
-                onClick={toggleRecording}
-                className={`w-32 ${
-                  isRecording
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-green-500 hover:bg-green-600"
-                }`}
-              >
-                {isRecording ? (
-                  <>
-                    <MicOff className="w-4 h-4 mr-2" />
-                    停止
-                  </>
-                ) : (
-                  <>
-                    <Mic className="w-4 h-4 mr-2" />
-                    開始
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
+  };
+
+  const handleOverlayNextClick = async () => {
+    if (!isRecording) {
+      alert("録音中のみ次の画像に進めます");
+      return;
+    }
+    if (imgPosition === images.length - 1) {
+      alert("これ以上進めません");
+      return;
+    }
+    setImgPosition((prevPosition) => prevPosition + 1);
+    await startAndStop();
+    const nextButton = document.querySelector(".carousel-next");
+    if (nextButton) {
+      (nextButton as HTMLElement).click();
+    }
+  };
+
+  const handleOverlayPrevClick = async () => {
+    if (imgPosition === 0) {
+      alert("これ以上戻れません");
+      return;
+    }
+    setImgPosition((prevPosition) => prevPosition - 1);
+    const prevButton = document.querySelector(".carousel-prev");
+    if (prevButton) {
+      (prevButton as HTMLElement).click();
+    }
+  };
+
+  const showConsole = () => {
+    console.log(imgPosition);
+    console.log(images.length);
+  };
+
+  return (
+    <div>
+      <button onClick={showConsole}>show</button>
+      <Carousel className="w-full max-w-xl mx-auto">
+        <CarouselContent>
+          {images.map((src, index) => (
+            <CarouselItem key={index}>
+              <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg">
+                <img src={src} alt={`Slide ${index + 1}`} />
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className="carousel-prev absolute left-4 top-1/2 -translate-y-1/2" />
+        <button
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-transparent"
+          onClick={handleOverlayPrevClick}
+        />
+        <CarouselNext className="carousel-next absolute right-4 top-1/2 -translate-y-1/2" />
+        <button
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-transparent"
+          onClick={handleOverlayNextClick}
+        />
+      </Carousel>
+      <div className="flex justify-center">
+        {((imgPosition === 0 && !isRecording) ||
+          (imgPosition === images.length - 1 && isRecording)) && (
+          <Button
+            onClick={toggleRecording}
+            className={`w-32 ${
+              isRecording
+                ? "bg-red-500 hover:bg-red-600"
+                : "bg-green-500 hover:bg-green-600"
+            }`}
+          >
+            {isRecording ? (
+              <>
+                <MicOff className="w-4 h-4 mr-2" />
+                停止
+              </>
+            ) : (
+              <>
+                <Mic className="w-4 h-4 mr-2" />
+                開始
+              </>
+            )}
+          </Button>
+        )}
+      </div>
+    </div>
   );
 };
 
