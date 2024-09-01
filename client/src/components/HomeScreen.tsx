@@ -24,7 +24,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
   );
   const [chunks, setChunks] = useState<Blob[]>([]);
   const [imgPosition, setImgPosition] = useState(0);
-  const [transcribedTexts, setTranscribedTexts] = useState<TranscribedText[]>(
+  const [transcribedTexts, setTranscribedTexts] = useState<string[]>(
     []
   );
   const [isTranscribing, setIsTranscribing] = useState(false);
@@ -125,19 +125,17 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
   };
 
   const navigate = useNavigate();
-  type TranscribedText = {
-    text: string;
-  };
+  // type TranscribedText = {
+  //   text: string;
+  // };
   const handleToResult = () => {
-    setGlobalImages(images);
     if (isTranscribing) {
       alert("音声の文字起こし中です。しばらくお待ちください。");
       return;
     }
-    const stringTranscribedTexts = transcribedTexts.map(
-      (item: TranscribedText) => item.text
-    );
-    setGlobalTranscribedTexts(stringTranscribedTexts);
+    console.log(transcribedTexts);
+    setGlobalImages(images);
+    setGlobalTranscribedTexts(transcribedTexts);
     navigate("/result");
   };
 

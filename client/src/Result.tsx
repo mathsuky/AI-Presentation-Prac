@@ -64,6 +64,7 @@ const ResultView = () => {
     const base64Images = await Promise.all(globalImages.map(blobUrlToBase64));
     setLoadingState("loading");
     try {
+      console.log(globalTranscribedTexts, base64Images);
       const response = await getAPIResponse(
         globalTranscribedTexts,
         base64Images
