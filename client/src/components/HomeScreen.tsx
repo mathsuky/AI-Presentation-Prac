@@ -57,7 +57,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
           if (recordedBlob != null) {
             fd.append("audio", recordedBlob, "recordData.webm");
             setIsTranscribing(true);
-            fetch(`${process.env.REACT_APP_BASE_URL}/audio-to-text`, {
+            fetch(`https://team-c-qhxn.onrender.com/audio-to-text`, {
               method: "POST",
               body: fd,
             })

@@ -38,7 +38,7 @@ const ResultView = () => {
     message: string | string[],
     images?: string[]
   ) => {
-    const response = await fetch(`${process.env.REACT_APP_BASE_URL}/chat`, {
+    const response = await fetch(`https://team-c-qhxn.onrender.com/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
