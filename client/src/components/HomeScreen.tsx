@@ -6,7 +6,7 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious,
+  // CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Mic, MicOff } from "lucide-react";
 import { AppContext } from "@/contexts/AppContext";
@@ -157,21 +157,21 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
     }
   };
 
-  const handleOverlayPrevClick = async () => {
-    try {
-      if (imgPosition === 0) {
-        alert("これ以上戻れません");
-        return;
-      }
-      setImgPosition((prevPosition) => prevPosition - 1);
-      const prevButton = document.querySelector(".carousel-prev");
-      if (prevButton) {
-        (prevButton as HTMLElement).click();
-      }
-    } catch (error) {
-      console.error("正しく画像を戻せませんでした。", error);
-    }
-  };
+  // const handleOverlayPrevClick = async () => {
+  //   try {
+  //     if (imgPosition === 0) {
+  //       alert("これ以上戻れません");
+  //       return;
+  //     }
+  //     setImgPosition((prevPosition) => prevPosition - 1);
+  //     const prevButton = document.querySelector(".carousel-prev");
+  //     if (prevButton) {
+  //       (prevButton as HTMLElement).click();
+  //     }
+  //   } catch (error) {
+  //     console.error("正しく画像を戻せませんでした。", error);
+  //   }
+  // };
 
   return (
     <div>
@@ -185,11 +185,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="carousel-prev absolute left-4 top-1/2 -translate-y-1/2" />
+        {/* <CarouselPrevious className="carousel-prev absolute left-4 top-1/2 -translate-y-1/2" />
         <button
           className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-transparent"
           onClick={handleOverlayPrevClick}
-        />
+        /> */}
         <CarouselNext className="carousel-next absolute right-4 top-1/2 -translate-y-1/2" />
         <button
           className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-transparent"
