@@ -13,7 +13,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/result" element={<ResultView />} />
-            <Route path="*" element={<h1>Not Found Page</h1>} />
+            {/* <Route path="*" element={<h1>Not Found Page</h1>} /> */}
           </Routes>
         </BrowserRouter>
       </div>

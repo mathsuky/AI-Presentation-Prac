@@ -23,10 +23,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
   );
   const [chunks, setChunks] = useState<Blob[]>([]);
   const [imgPosition, setImgPosition] = useState(0);
-  const [transcribedTexts, setTranscribedTexts] = useState<string[]>([]);
+  const [transcribedTexts, setTranscribedTexts] = useState<TranscribedText[]>(
+    []
+  );
+  const [isTranscribing, setIsTranscribing] = useState(false);
 
-  const { globalImages, setGlobalImages, setGlobalTranscribedTexts } =
-    useContext(AppContext);
+  const { setGlobalImages, setGlobalTranscribedTexts } = useContext(AppContext);
 
   async function startRecording() {
     try {
@@ -57,6 +59,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
           const fd = new FormData();
           if (recordedBlob != null) {
             fd.append("audio", recordedBlob, "recordData.webm");
+            setIsTranscribing(true);
             fetch("http://localhost:3000/audio-to-text", {
               method: "POST",
               body: fd,
@@ -72,6 +75,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
               })
               .catch((error) => {
                 console.error(error);
+              })
+              .finally(() => {
+                setIsTranscribing(false);
               });
           } else {
             console.error("Error: recordedBlob is null");
@@ -119,9 +125,17 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
   };
 
   const navigate = useNavigate();
+  type TranscribedText = {
+    text: string;
+  };
   const handleToResult = () => {
     setGlobalImages(images);
-    setGlobalTranscribedTexts(transcribedTexts);
+
+    const stringTranscribedTexts = transcribedTexts.map(
+      (item: TranscribedText) => item.text
+    );
+    console.log("Transcribed texts:", stringTranscribedTexts);
+    setGlobalTranscribedTexts(stringTranscribedTexts);
     navigate("/result");
   };
 
@@ -134,6 +148,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
       if (imgPosition === images.length - 1) {
         alert("これ以上進めません");
         return;
+      }
+      while (isTranscribing) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
       }
       setImgPosition((prevPosition) => prevPosition + 1);
       await startAndStop();

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,25 +13,43 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertTriangle, HelpCircle, Lightbulb } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "@/contexts/AppContext";
 
-const getAPIResponse = async (message: string) => {
-  const response = await fetch("http://localhost:3000/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ message: message }),
+const blobUrlToBase64 = async (blobUrl: string): Promise<string> => {
+  const response = await fetch(blobUrl);
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      resolve(reader.result as string);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
   });
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-
-  const data = await response.json();
-  return data;
 };
 
 const ResultView = () => {
+  const { globalImages, globalTranscribedTexts } = useContext(AppContext);
+  const getAPIResponse = async (
+    message: string | string[],
+    images?: string[]
+  ) => {
+    const response = await fetch("http://localhost:3000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message, images }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    return data;
+  };
+
   const [apiResponseText, setApiResponseText] = useState<string | null>(null);
   const [loadingState, setLoadingState] = useState<
     "loading" | "loaded" | "error"
@@ -39,12 +57,21 @@ const ResultView = () => {
   const navigate = useNavigate();
 
   const handleButtonClick = async () => {
+    console.log(globalImages, globalTranscribedTexts);
+    const base64Images = await Promise.all(globalImages.map(blobUrlToBase64));
+    console.log("Base64 images:", base64Images);
+    const tmp = [
+      "https://rs.sakura.ad.jp/column/wp-content/uploads/2021/05/0514_img01.png",
+      "https://rs.sakura.ad.jp/column/wp-content/uploads/2021/05/0514_img01.png",
+    ];
     setLoadingState("loading");
     try {
       const response = await getAPIResponse(
-        "ランダムなひらがな３文字を返してください。それ以外はレスポンスに含めないでください。"
+        globalTranscribedTexts,
+        base64Images
       );
-      setApiResponseText(response.content.kwargs.content);
+      // setApiResponseText(response.content.kwargs.content);
+      console.log("API response:", response);
       setLoadingState("loaded");
     } catch (error) {
       console.error("Error fetching API response:", error);
