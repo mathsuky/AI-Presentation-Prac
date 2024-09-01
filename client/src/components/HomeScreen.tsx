@@ -111,6 +111,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ images }) => {
 
   const handleOverlayNextClick = async () => {
     try {
+      if (!isRecording) {
+        alert("録音中のみ次の画像に進めます");
+        return;
+      }
       if (imgPosition === images.length - 1) {
         alert("これ以上進めません");
         return;
