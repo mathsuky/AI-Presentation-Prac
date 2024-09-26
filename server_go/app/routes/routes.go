@@ -6,4 +6,5 @@ import (
 
 func RegisterRoutes(server *echo.Echo) {
 	server.GET("/hello", getHello)
+	server.POST("/hello", postHello)
 }
