@@ -2,9 +2,10 @@ package routes
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/mathsuky/AI-Presentation-Prac/server_go/handlers"
 )
 
-func RegisterRoutes(server *echo.Echo) {
-	server.GET("/hello", getHello)
-	server.POST("/hello", postHello)
+func RegisterRoutes(e *echo.Echo) {
+	e.GET("/hello", handlers.GetHello)
+	e.POST("/hello", handlers.PostHello)
 }
