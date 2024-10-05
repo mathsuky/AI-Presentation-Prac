@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mathsuky/AI-Presentation-Prac/server_go/middleware"
+	validatormiddleware "github.com/mathsuky/AI-Presentation-Prac/server_go/middleware"
 	"github.com/mathsuky/AI-Presentation-Prac/server_go/routes"
 
 	"github.com/labstack/echo/v4"
@@ -9,13 +9,18 @@ import (
 )
 
 func main() {
-	server := echo.New()
+	e := echo.New()
 
-	server.Use(echomiddleware.Logger())
-	server.Use(echomiddleware.Recover())
-	server.Use(middleware.CustomValidatorMiddleware())
+	e.Use(echomiddleware.Logger())
+	e.Use(echomiddleware.Recover())
+	e.Use(validatormiddleware.CustomValidatorMiddleware())
 
-	routes.RegisterRoutes(server)
+	e.Use(echomiddleware.CORSWithConfig(echomiddleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:5173", "http://localhost:5174"},
+		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
+	}))
 
-	server.Logger.Fatal(server.Start(":8080"))
+	routes.RegisterRoutes(e)
+
+	e.Logger.Fatal(e.Start(":8080"))
 }

@@ -10,18 +10,23 @@ import ImgUploader from "@/components/ImgUploader.tsx";
 import HomeScreen from "./components/HomeScreen";
 
 export default function TopScreen() {
-
   const [images, setImages] = useState<string[]>([]);
   const [isUploaded, setIsUploaded] = useState(false);
- 
 
   const handleImagesUpload = (uploadedImages: string[]) => {
     setImages(uploadedImages);
     setIsUploaded(true);
   };
 
+  const handleSayHello = async () => {
+    const res = await fetch("httP://localhost:8080/hello");
+    const data = await res.json();
+    console.log(data);
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#E5F1F8] p-4">
+      <button onClick={handleSayHello}>say hello</button>
       <Card className="w-full max-w-4xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
@@ -41,10 +46,11 @@ export default function TopScreen() {
             1.「開始」ボタンを押して、プレゼンを始めてください。
             <br />
             2.矢印キーをクリックしてスライドを進めてください
-            <br/>
+            <br />
             3. 終了したら「停止」ボタンを押してください。
             <br />
-            4. 停止後「リザルト」ボタンを押してください。AIがフィードバックを提供します。
+            4.
+            停止後「リザルト」ボタンを押してください。AIがフィードバックを提供します。
           </p>
         </CardContent>
       </Card>

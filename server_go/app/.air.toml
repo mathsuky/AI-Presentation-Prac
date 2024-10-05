@@ -4,7 +4,7 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-cmd = "go build -o ./tmp/main ./main.go"
+cmd = "go build -tags extlib -o ./tmp/main ./main.go"
 bin = "tmp/main"
 # 検知の対象とする拡張子
 include_ext = ["go", "tpl", "tmpl", "html"]
